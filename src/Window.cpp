@@ -25,6 +25,7 @@ int Window::init() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    glfwWindowHint(GLFW_DEPTH_BITS, 24);
     window = glfwCreateWindow(width, height, "3d game", NULL, NULL);
     if (window == NULL) {
 	std::cout << "Failed to create GLFW window" << std::endl;
@@ -39,6 +40,9 @@ int Window::init() {
 	return -1;
     }
 
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
     glViewport(0, 0, width, height);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     Mesh::init();
@@ -51,7 +55,7 @@ void Window::mainLoop() {
 	processInput();
 
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
 	parent->updateChildren();
 	parent->drawChildren();

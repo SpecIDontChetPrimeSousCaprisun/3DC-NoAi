@@ -156,7 +156,7 @@ void Mesh::draw() {
     glActiveTexture(GL_TEXTURE0);
 
     sendMatrix();
-    shader->setVec3("lightPos", glm::vec3(1.0, 0.2, 3.0));
+    shader->setVec3("lightPos", glm::vec3(30.0, 15.0, 30.0));
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
