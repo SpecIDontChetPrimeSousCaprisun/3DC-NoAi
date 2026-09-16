@@ -155,6 +155,7 @@ void Mesh::draw() {
 
     sendMatrix();
     shader->setVec3("lightPos", glm::vec3(30.0, 15.0, 30.0));
+    shader->setVec3("viewPos", Window::camera.position);
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -163,7 +164,9 @@ void Mesh::draw() {
 }
 
 void Mesh::sendMatrix() {
+    rotation.y += 10.0f * Window::dt;
     glm::mat4 model = glm::mat4(1.0f);
+
     glm::mat4 view = glm::lookAt(
 	Window::camera.position,
 	Window::camera.position + Window::camera.forward,
@@ -171,6 +174,9 @@ void Mesh::sendMatrix() {
     );
 
     model = glm::translate(model, position);
+    model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
     glm::mat4 projection = glm::perspective(
 	glm::radians(70.0f),

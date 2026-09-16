@@ -16,8 +16,9 @@ public:
     static void loadModel(std::string path);
     static void init();
 
-    glm::vec3 position = glm::vec3(0.0f, 0.0f, -10.0f);
+    glm::vec3 position = glm::vec3(0.0f, 0.0f, 10.0f);
     glm::vec3 size = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 rotation = glm::vec3(0.0f, 180.0f, 0.0f);
     glm::vec3 linearVelocity = glm::vec3(0.0f, 0.0f, 0.0f);
 protected:
     void draw();
