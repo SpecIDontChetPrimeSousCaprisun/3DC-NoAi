@@ -12,6 +12,8 @@ public:
     void setBool(std::string name, bool value);
     void setInt(std::string name, int value);
     void setFloat(std::string name, float value);
+    void setMatrix(std::string name, glm::mat4 value);
+    void setVec3(std::string name, glm::vec3 value);
     
     unsigned int program;
 private:
