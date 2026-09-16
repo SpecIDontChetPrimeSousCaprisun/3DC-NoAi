@@ -7,7 +7,8 @@ SRC = src/main.cpp \
       src/Window.cpp \
       src/Shader.cpp \
       src/Node.cpp \
-      src/Mesh.cpp 
+      src/Mesh.cpp \
+      src/Camera.cpp
 
 OBJ_DIR = build
 
