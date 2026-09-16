@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Node.hpp"
+#include "Camera.hpp"
 
 class Window {
 public:
@@ -13,6 +14,7 @@ public:
     
     static GLFWwindow* window;
     static Node* parent;
+    static Camera camera;
     static int height;
     static int width;
 private:

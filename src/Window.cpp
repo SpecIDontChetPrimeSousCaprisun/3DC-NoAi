@@ -6,10 +6,11 @@
 
 GLFWwindow* Window::window = nullptr;
 Node* Window::parent = new Node();
+Camera Window::camera;
 int Window::width = 800;
 int Window::height = 600;
 
-void Window::frameBufferSizeCallback(GLFWwindow* window, int newWidth, int newHeight) {
+void Window::frameBufferSizeCallback(GLFWwindow*, int newWidth, int newHeight) {
     width = newWidth;
     height = newHeight;
     glViewport(0, 0, width, height);

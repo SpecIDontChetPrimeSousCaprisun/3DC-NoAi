@@ -29,12 +29,12 @@ void Mesh::loadModel(std::string path) {
 }
 
 void Mesh::processNode(aiNode* node, const aiScene* scene, std::string dir) {
-    for (int i = 0; i < node->mNumMeshes; i++) {
+    for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 	aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 	processMesh(mesh, scene, dir); 
     }
 
-    for (int i = 0; i < node->mNumChildren; i++) {
+    for (unsigned int i = 0; i < node->mNumChildren; i++) {
 	processNode(node->mChildren[i], scene, dir);
     }
 }
@@ -44,7 +44,7 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene, std::string dir) {
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
 
-    for (int i = 0; i < mesh->mNumVertices; i++) {
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 	Vertex vertex;
 	glm::vec3 vector;
 
@@ -68,25 +68,23 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene, std::string dir) {
 	vertices.push_back(vertex);
     }
 
-    for (int i = 0; i < mesh->mNumFaces; i++) {
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 	aiFace face = mesh->mFaces[i];
-	for (int j = 0; j < face.mNumIndices; j++) indices.push_back(face.mIndices[j]);
+	for (unsigned int j = 0; j < face.mNumIndices; j++) indices.push_back(face.mIndices[j]);
     }  
 
-    if (mesh->mMaterialIndex >= 0) {
-	aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-	std::vector<Texture> diffuseMaps = loadMaterialTextures(material, 
-					    aiTextureType_DIFFUSE, "texture_diffuse", dir);
-	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-	std::vector<Texture> specularMaps = loadMaterialTextures(material, 
-					    aiTextureType_SPECULAR, "texture_specular", dir);
-	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-    }
+    aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+    std::vector<Texture> diffuseMaps = loadMaterialTextures(material, 
+					aiTextureType_DIFFUSE, "texture_diffuse", dir);
+    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+    std::vector<Texture> specularMaps = loadMaterialTextures(material, 
+					aiTextureType_SPECULAR, "texture_specular", dir);
+    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
     new Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string directory) {
+std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string) {
     std::vector<Texture> textures;
 
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
@@ -140,7 +138,7 @@ void Mesh::draw() {
 
     glUseProgram(shader->program);
 
-    for (int i = 0; i < textures.size(); i++) {
+    for (unsigned int i = 0; i < textures.size(); i++) {
 	glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
         // retrieve texture number (the N in diffuse_textureN)
 	std::string number;
@@ -166,8 +164,10 @@ void Mesh::draw() {
 
 void Mesh::sendMatrix() {
     glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
 
     model = glm::translate(model, position);
+    view = glm::translate(view, Window::camera.position);
 
     glm::mat4 projection = glm::perspective(
 	glm::radians(70.0f),
@@ -177,5 +177,6 @@ void Mesh::sendMatrix() {
     );
 
     shader->setMatrix("model", model);
+    shader->setMatrix("view", view);
     shader->setMatrix("projection", projection);
 }
