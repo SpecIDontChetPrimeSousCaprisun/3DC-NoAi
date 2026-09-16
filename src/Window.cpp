@@ -7,6 +7,8 @@
 GLFWwindow* Window::window = nullptr;
 Node* Window::parent = new Node();
 Camera Window::camera;
+double Window::dt = 0;
+double Window::lastFrame = glfwGetTime();
 int Window::width = 800;
 int Window::height = 600;
 
@@ -43,9 +45,15 @@ int Window::init() {
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+    
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
 
     glViewport(0, 0, width, height);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     Mesh::init();
 
     return 0;
@@ -53,6 +61,16 @@ int Window::init() {
 
 void Window::mainLoop() {
     while(!glfwWindowShouldClose(window)) {
+	glfwPollEvents();    
+
+	double currentFrame = glfwGetTime();
+	dt = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	if (dt > 0.1) {
+	    dt = 0.1;
+	}
+
 	processInput();
 
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -62,7 +80,6 @@ void Window::mainLoop() {
 	parent->updateChildren();
 	parent->drawChildren();
 
-	glfwPollEvents();    
 	glfwSwapBuffers(window);
     }
 
