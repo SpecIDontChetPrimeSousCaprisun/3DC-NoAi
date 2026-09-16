@@ -6,6 +6,7 @@
 
 #include "Node.hpp"
 #include "Camera.hpp"
+#include "DirLight.hpp"
 
 class Window {
 public:
