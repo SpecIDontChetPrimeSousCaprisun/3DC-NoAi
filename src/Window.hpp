@@ -2,6 +2,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <vector>
+
+#include "Node.hpp"
 
 class Window {
 public:
@@ -9,6 +12,7 @@ public:
     static void mainLoop();
     
     static GLFWwindow* window;
+    static Node* parent;
     static int height;
     static int width;
 private:

@@ -51,3 +51,15 @@ void Shader::createShader(std::string path, unsigned int shader) {
 	std::cout << "ERROR::SHADER::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 }
+
+void Shader::setBool(std::string name, bool value) {
+    glUniform1i(glGetUniformLocation(program, name.c_str()), (int)value);
+}
+
+void Shader::setFloat(std::string name, float value) {
+    glUniform1f(glGetUniformLocation(program, name.c_str()), value);
+}
+
+void Shader::setInt(std::string name, int value) {
+    glUniform1i(glGetUniformLocation(program, name.c_str()), value);
+}

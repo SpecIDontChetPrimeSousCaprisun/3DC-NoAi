@@ -17,6 +17,7 @@
 		    libXi
 		    libXxf86vm
 		    libXcursor
+		    assimp
 		];
 
 		shellHook = ''

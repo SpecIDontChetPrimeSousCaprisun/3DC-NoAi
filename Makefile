@@ -5,7 +5,9 @@ TARGET = game
 SRC = src/main.cpp \
       src/glad.c \
       src/Window.cpp \
-      src/Shader.cpp
+      src/Shader.cpp \
+      src/Node.cpp \
+      src/Mesh.cpp 
 
 OBJ_DIR = build
 
@@ -19,7 +21,8 @@ LIBS_LINUX = -lglfw \
 	     -lXrandr \
 	     -lXi \
 	     -lXxf86vm \
-	     -lXcursor
+	     -lXcursor \
+	     -lassimp
 
 all: $(TARGET)
 
