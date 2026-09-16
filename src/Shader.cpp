@@ -77,3 +77,10 @@ void Shader::setVec3(std::string name, glm::vec3 value) {
     glUniform3f(glGetUniformLocation(program, name.c_str()), 
 		value.x, value.y, value.z);
 }
+
+void Shader::setDirLight(DirLight light) {
+    setVec3("dirLight.direction", light.direction);
+    setVec3("dirLight.ambient", light.ambient);
+    setVec3("dirLight.diffuse", light.diffuse);
+    setVec3("dirLight.specular", light.specular);
+}

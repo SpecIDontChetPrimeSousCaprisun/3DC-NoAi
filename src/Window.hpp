@@ -15,6 +15,7 @@ public:
     static GLFWwindow* window;
     static Node* parent;
     static Camera camera;
+    static DirLight dirLight;
     static double dt;
     static double lastFrame;
     static int height;

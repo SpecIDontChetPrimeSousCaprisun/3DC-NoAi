@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "DirLight.hpp"
+
 class Shader {
 public:
     Shader(std::string vertexPath, std::string fragPath);
@@ -14,6 +16,7 @@ public:
     void setFloat(std::string name, float value);
     void setMatrix(std::string name, glm::mat4 value);
     void setVec3(std::string name, glm::vec3 value);
+    void setDirLight(DirLight light);
     
     unsigned int program;
 private:

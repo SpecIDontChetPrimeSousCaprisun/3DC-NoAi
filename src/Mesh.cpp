@@ -154,7 +154,7 @@ void Mesh::draw() {
     glActiveTexture(GL_TEXTURE0);
 
     sendMatrix();
-    shader->setVec3("lightPos", glm::vec3(30.0, 15.0, 30.0));
+    shader->setDirLight(Window::dirLight);
     shader->setVec3("viewPos", Window::camera.position);
 
     glBindVertexArray(VAO);
@@ -164,7 +164,6 @@ void Mesh::draw() {
 }
 
 void Mesh::sendMatrix() {
-    rotation.y += 10.0f * Window::dt;
     glm::mat4 model = glm::mat4(1.0f);
 
     glm::mat4 view = glm::lookAt(

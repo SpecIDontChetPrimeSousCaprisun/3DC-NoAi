@@ -3,10 +3,12 @@
 #include "Shader.hpp"
 #include "Window.hpp"
 #include "Mesh.hpp"
+#include "DirLight.hpp"
 
 GLFWwindow* Window::window = nullptr;
 Node* Window::parent = new Node();
 Camera Window::camera;
+DirLight Window::dirLight;
 double Window::dt = 0;
 double Window::lastFrame = glfwGetTime();
 int Window::width = 800;
@@ -55,6 +57,11 @@ int Window::init() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Mesh::init();
+
+    dirLight.direction = glm::vec3(0.6f, 0.0f, 0.3f);
+    dirLight.ambient = glm::vec3(0.25f, 0.1f, 0.0f);
+    dirLight.diffuse = glm::vec3(0.0f, 0.7f, 0.3f);
+    dirLight.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 
     return 0;
 }
