@@ -87,16 +87,16 @@ void Shader::setDirLight(DirLight light) {
 
 void Shader::setPointLight(int number, PointLight light) {
     std::ostringstream ss;
-    ss << "pointLights[" << number;
+    ss << "pointLights[" << number << "]";
     std::string name = ss.str();
 
-    setVec3((name + ".position]").c_str(), light.position); 
-    setFloat((name + ".constant]").c_str(), light.constant);
-    setFloat((name + ".linear]").c_str(), light.linear);
-    setFloat((name + ".quadratic]").c_str(), light.quadratic);
-    setVec3((name + ".ambient]").c_str(), light.ambient);
-    setVec3((name + ".diffuse]").c_str(), light.diffuse);
-    setVec3((name + ".specular]").c_str(), light.specular);
+    setVec3((name + ".position").c_str(), light.position); 
+    setFloat((name + ".constant").c_str(), light.constant);
+    setFloat((name + ".linear").c_str(), light.linear);
+    setFloat((name + ".quadratic").c_str(), light.quadratic);
+    setVec3((name + ".ambient").c_str(), light.ambient);
+    setVec3((name + ".diffuse").c_str(), light.diffuse);
+    setVec3((name + ".specular").c_str(), light.specular);
 }
 
 void Shader::setMaterial(Material material) {
