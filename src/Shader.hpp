@@ -6,6 +6,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "DirLight.hpp"
+#include "PointLight.hpp"
+#include "Material.hpp"
 
 class Shader {
 public:
@@ -17,6 +19,8 @@ public:
     void setMatrix(std::string name, glm::mat4 value);
     void setVec3(std::string name, glm::vec3 value);
     void setDirLight(DirLight light);
+    void setPointLight(int number, PointLight light);
+    void setMaterial(Material material);
     
     unsigned int program;
 private:

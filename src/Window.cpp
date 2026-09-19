@@ -57,6 +57,7 @@ int Window::init() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     Mesh::init();
+    PointLight::init();
 
     dirLight.direction = glm::vec3(0.6f, 0.0f, 0.3f);
     dirLight.ambient = glm::vec3(0.25f, 0.1f, 0.0f);

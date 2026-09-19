@@ -2,25 +2,28 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude
 TARGET = game
 
-SRC = src/main.cpp \
-      src/glad.c \
-      src/Window.cpp \
-      src/Shader.cpp \
-      src/Node.cpp \
-      src/Mesh.cpp \
-      src/Camera.cpp
+SRC = src/main.cpp       \
+      src/glad.c         \
+      src/Window.cpp     \
+      src/Shader.cpp     \
+      src/Node.cpp       \
+      src/Mesh.cpp       \
+      src/Camera.cpp     \
+      src/PointLight.cpp \
+      src/stbImpl.cpp    \
+      src/Texture.cpp
 
 OBJ_DIR = build
 
 OBJ = $(SRC:src/%.cpp=$(OBJ_DIR)/src/%.o)
 OBJ := $(OBJ:src/glad.c=$(OBJ_DIR)/src/glad.o)
 
-LIBS_LINUX = -lglfw \
-	     -lGL \
-	     -ldl \
-	     -lX11 \
-	     -lXrandr \
-	     -lXi \
+LIBS_LINUX = -lglfw    \
+	     -lGL      \
+	     -ldl      \
+	     -lX11     \
+	     -lXrandr  \
+	     -lXi      \
 	     -lXxf86vm \
 	     -lXcursor \
 	     -lassimp

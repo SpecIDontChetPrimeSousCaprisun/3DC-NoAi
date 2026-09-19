@@ -11,10 +11,12 @@
 #include "Texture.hpp"
 #include "Shader.hpp"
 
-class Mesh : Node {
+class Mesh : public Node {
 public:
     static void loadModel(std::string path);
     static void init();
+
+    Material material;
 protected:
     void draw();
 private:

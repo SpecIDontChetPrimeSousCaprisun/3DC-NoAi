@@ -2,6 +2,7 @@
 
 #include "Mesh.hpp"
 #include "Window.hpp"
+#include "PointLight.hpp"
 
 Shader* Mesh::shader;
 
@@ -87,14 +88,14 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene, std::string dir) {
 std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string) {
     std::vector<Texture> textures;
 
-    for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
+    /*for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
         aiString str;
         mat->GetTexture(type, i, &str);
         Texture texture;
         //texture.id = TextureFromFile(str.C_Str(), directory);
-        texture.type = typeName;
+        //texture.type = typeName;
         textures.push_back(texture);
-    }
+    }*/
 
     return textures;
 }  
@@ -129,6 +130,9 @@ Mesh::Mesh(
 
     glBindVertexArray(0);
 
+    material.diffuse.gen("textures/logo2.png");
+    material.specular.gen("textures/logo2.png");
+
     setParent(Window::parent);
 }
 
@@ -138,7 +142,7 @@ void Mesh::draw() {
 
     glUseProgram(shader->program);
 
-    for (unsigned int i = 0; i < textures.size(); i++) {
+    /*for (unsigned int i = 0; i < textures.size(); i++) {
 	glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
         // retrieve texture number (the N in diffuse_textureN)
 	std::string number;
@@ -149,13 +153,23 @@ void Mesh::draw() {
 
         shader->setInt(("material." + name + number).c_str(), i);
         glBindTexture(GL_TEXTURE_2D, textures[i].id);
-    }
+    }*/
 
     glActiveTexture(GL_TEXTURE0);
 
     sendMatrix();
+    shader->setMaterial(material);
     shader->setDirLight(Window::dirLight);
     shader->setVec3("viewPos", Window::camera.position);
+
+    for (int i = 0; i < 8; i++) {
+	shader->setPointLight(i, PointLight::lights[i]);
+    }
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, material.diffuse.id);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, material.specular.id);
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

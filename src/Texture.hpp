@@ -4,6 +4,13 @@
 
 class Texture {
 public:
+    Texture();
+
+    void gen(std::string path);
+
     unsigned int id;
-    std::string type;
+private:
+    int width;
+    int height;
+    int nrChannels;
 };
