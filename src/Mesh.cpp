@@ -24,26 +24,23 @@ void Mesh::loadModel(std::string path) {
 	std::cout << "Error loading model : " << import.GetErrorString() << "\n";
     }
 
-    std::string dir = path.substr(0, path.find_last_of('/'));
-
-    processNode(scene->mRootNode, scene, dir);
+    processNode(scene->mRootNode, scene);
 }
 
-void Mesh::processNode(aiNode* node, const aiScene* scene, std::string dir) {
+void Mesh::processNode(aiNode* node, const aiScene* scene) {
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 	aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-	processMesh(mesh, scene, dir); 
+	processMesh(mesh); 
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
-	processNode(node->mChildren[i], scene, dir);
+	processNode(node->mChildren[i], scene);
     }
 }
 
-void Mesh::processMesh(aiMesh* mesh, const aiScene* scene, std::string dir) {
+void Mesh::processMesh(aiMesh* mesh) {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
 
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 	Vertex vertex;
@@ -74,37 +71,13 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene, std::string dir) {
 	for (unsigned int j = 0; j < face.mNumIndices; j++) indices.push_back(face.mIndices[j]);
     }  
 
-    aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-    std::vector<Texture> diffuseMaps = loadMaterialTextures(material, 
-					aiTextureType_DIFFUSE, "texture_diffuse", dir);
-    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-    std::vector<Texture> specularMaps = loadMaterialTextures(material, 
-					aiTextureType_SPECULAR, "texture_specular", dir);
-    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-
-    new Mesh(vertices, indices, textures);
+    new Mesh(vertices, indices);
 }
-
-std::vector<Texture> Mesh::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string) {
-    std::vector<Texture> textures;
-
-    /*for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
-        aiString str;
-        mat->GetTexture(type, i, &str);
-        Texture texture;
-        //texture.id = TextureFromFile(str.C_Str(), directory);
-        //texture.type = typeName;
-        textures.push_back(texture);
-    }*/
-
-    return textures;
-}  
 
 Mesh::Mesh(
 	std::vector<Vertex> vertices,
-	std::vector<unsigned int> indices,
-	std::vector<Texture> textures
-    ) : indices(indices), textures(textures) {
+	std::vector<unsigned int> indices
+    ) : vertices(vertices), indices(indices) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -137,9 +110,6 @@ Mesh::Mesh(
 }
 
 void Mesh::draw() {
-    int diffuseNr = 1;
-    int specularNr = 1;
-
     glUseProgram(shader->program);
 
     /*for (unsigned int i = 0; i < textures.size(); i++) {
@@ -166,11 +136,6 @@ void Mesh::draw() {
 	shader->setPointLight(i, PointLight::lights[i]);
     }
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, material.diffuse.id);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, material.specular.id);
-
     glBindVertexArray(VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -192,6 +157,7 @@ void Mesh::sendMatrix() {
     model = glm::rotate(model, glm::radians(worldRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
     model = glm::rotate(model, glm::radians(worldRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
     model = glm::rotate(model, glm::radians(worldRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+    model = glm::scale(model, size);
 
     glm::mat4 projection = glm::perspective(
 	glm::radians(70.0f),
@@ -203,4 +169,26 @@ void Mesh::sendMatrix() {
     shader->setMatrix("model", model);
     shader->setMatrix("view", view);
     shader->setMatrix("projection", projection);
+}
+
+glm::vec3 Mesh::getBounds() {
+    glm::vec3 bounds(0.0f, 0.0f, 0.0f);
+    glm::vec3 lowest(0.0f, 0.0f, 0.0f);
+    glm::vec3 highest(0.0f, 0.0f, 0.0f);
+    
+    for (Vertex vertex : vertices) {
+	if (vertex.position.x < lowest.x) lowest.x = vertex.position.x;
+	else if (vertex.position.x > highest.x) highest.x = vertex.position.x;
+
+	if (vertex.position.y < lowest.y) lowest.y = vertex.position.y;
+	else if (vertex.position.y > highest.y) highest.y = vertex.position.y;
+
+	if (vertex.position.z < lowest.z) lowest.z = vertex.position.z;
+	else if (vertex.position.z > highest.z) highest.z = vertex.position.z;
+    }
+
+    bounds = highest - lowest;
+    bounds *= size;
+
+    return bounds;
 }

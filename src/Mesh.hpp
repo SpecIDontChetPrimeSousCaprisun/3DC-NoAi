@@ -17,24 +17,24 @@ public:
     static void init();
 
     Material material;
+
+    glm::vec3 getBounds();
 protected:
     void draw();
 private:
     Mesh(
 	std::vector<Vertex> vertices,
-	std::vector<unsigned int> indices,
-	std::vector<Texture> textures
+	std::vector<unsigned int> indices
     );
 
     static Shader* shader;
 
-    static void processNode(aiNode* node, const aiScene* scene, std::string dir);
-    static void processMesh(aiMesh* mesh, const aiScene* scene, std::string dir);
-    static std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string dir);
+    static void processNode(aiNode* node, const aiScene* scene);
+    static void processMesh(aiMesh* mesh);
 
     void sendMatrix();
 
     unsigned int VAO, VBO, EBO;
+    std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<Texture> textures;
 };
