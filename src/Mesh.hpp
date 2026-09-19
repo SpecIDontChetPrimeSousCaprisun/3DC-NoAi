@@ -11,15 +11,26 @@
 #include "Texture.hpp"
 #include "Shader.hpp"
 
+class BoundResult {
+public:
+    glm::vec3 min;
+    glm::vec3 max;
+    glm::vec3 size;
+};
+
 class Mesh : public Node {
 public:
-    static void loadModel(std::string path);
+    static std::vector<Mesh*> loadModel(std::string path);
     static void init();
 
+    bool canCollide = false;
+    bool anchored = true;
     Material material;
 
-    glm::vec3 getBounds();
+    BoundResult getBounds();
+    bool intersects(Mesh other);
 protected:
+    void update();
     void draw();
 private:
     Mesh(
@@ -28,11 +39,13 @@ private:
     );
 
     static Shader* shader;
+    static std::vector<Mesh*> meshes;
 
-    static void processNode(aiNode* node, const aiScene* scene);
-    static void processMesh(aiMesh* mesh);
+    static std::vector<Mesh*> processNode(aiNode* node, const aiScene* scene);
+    static Mesh* processMesh(aiMesh* mesh);
 
     void sendMatrix();
+    void resolveCollision(Mesh other);
 
     unsigned int VAO, VBO, EBO;
     std::vector<Vertex> vertices;

@@ -4,13 +4,15 @@
 #include "Window.hpp"
 #include "PointLight.hpp"
 
+std::vector<Mesh*> Mesh::meshes;
 Shader* Mesh::shader;
 
 void Mesh::init() {
     Mesh::shader = new Shader("shaders/vertex.glsl", "shaders/fragment.glsl");
 }
 
-void Mesh::loadModel(std::string path) {
+std::vector<Mesh*> Mesh::loadModel(std::string path) {
+    std::vector<Mesh*> meshes;
     Assimp::Importer import;
 
     const aiScene* scene = import.ReadFile(
@@ -24,21 +26,31 @@ void Mesh::loadModel(std::string path) {
 	std::cout << "Error loading model : " << import.GetErrorString() << "\n";
     }
 
-    processNode(scene->mRootNode, scene);
+    for (Mesh* mesh : processNode(scene->mRootNode, scene)) {
+	meshes.push_back(mesh);
+    }
+
+    return meshes;
 }
 
-void Mesh::processNode(aiNode* node, const aiScene* scene) {
+std::vector<Mesh*> Mesh::processNode(aiNode* node, const aiScene* scene) {
+    std::vector<Mesh*> meshes;
+
     for (unsigned int i = 0; i < node->mNumMeshes; i++) {
 	aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-	processMesh(mesh); 
+	meshes.push_back(processMesh(mesh)); 
     }
 
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
-	processNode(node->mChildren[i], scene);
+	for (Mesh* mesh : processNode(node->mChildren[i], scene)) {
+	    meshes.push_back(mesh);
+	}
     }
+
+    return meshes;
 }
 
-void Mesh::processMesh(aiMesh* mesh) {
+Mesh* Mesh::processMesh(aiMesh* mesh) {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
@@ -71,7 +83,7 @@ void Mesh::processMesh(aiMesh* mesh) {
 	for (unsigned int j = 0; j < face.mNumIndices; j++) indices.push_back(face.mIndices[j]);
     }  
 
-    new Mesh(vertices, indices);
+    return new Mesh(vertices, indices);
 }
 
 Mesh::Mesh(
@@ -107,25 +119,11 @@ Mesh::Mesh(
     material.specular.gen("textures/logo2.png");
 
     setParent(Window::parent);
+    meshes.push_back(this);
 }
 
 void Mesh::draw() {
     glUseProgram(shader->program);
-
-    /*for (unsigned int i = 0; i < textures.size(); i++) {
-	glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-        // retrieve texture number (the N in diffuse_textureN)
-	std::string number;
-	std::string name = textures[i].type;
-
-        if (name == "texture_diffuse") number = std::to_string(diffuseNr++);
-        else if (name == "texture_specular") number = std::to_string(specularNr++);
-
-        shader->setInt(("material." + name + number).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
-    }*/
-
-    glActiveTexture(GL_TEXTURE0);
 
     sendMatrix();
     shader->setMaterial(material);
@@ -171,7 +169,7 @@ void Mesh::sendMatrix() {
     shader->setMatrix("projection", projection);
 }
 
-glm::vec3 Mesh::getBounds() {
+BoundResult Mesh::getBounds() {
     glm::vec3 bounds(0.0f, 0.0f, 0.0f);
     glm::vec3 lowest(0.0f, 0.0f, 0.0f);
     glm::vec3 highest(0.0f, 0.0f, 0.0f);
@@ -187,8 +185,70 @@ glm::vec3 Mesh::getBounds() {
 	else if (vertex.position.z > highest.z) highest.z = vertex.position.z;
     }
 
-    bounds = highest - lowest;
     bounds *= size;
 
-    return bounds;
+    BoundResult result;
+
+    result.min = lowest * size;
+    result.max = highest * size;
+    result.size = bounds;
+
+    return result;
+}
+
+void Mesh::update() {
+    if (anchored) return;
+
+    linearVelocity.y -= 1.0f * (float)Window::dt;
+
+    for (Mesh* other : meshes) {
+	if (other == this) continue;
+	if (intersects(*other)) resolveCollision(*other);
+    }
+}
+
+bool Mesh::intersects(Mesh other) {
+    BoundResult bounds = getBounds();
+    BoundResult oBounds = other.getBounds();
+
+    glm::vec3 min = getWorldPosition() + bounds.min;
+    glm::vec3 max = getWorldPosition() + bounds.max;
+
+    glm::vec3 oMin = other.getWorldPosition() + oBounds.min;
+    glm::vec3 oMax = other.getWorldPosition() + oBounds.max;
+
+    return min.x <= oMax.x &&
+	   max.x >= oMin.x &&
+	   min.y <= oMax.y &&
+	   max.y >= oMin.y &&
+	   min.z <= oMax.z &&
+	   max.z >= oMin.z;
+}
+
+void Mesh::resolveCollision(Mesh other) {
+    BoundResult bounds = getBounds();
+    BoundResult oBounds = other.getBounds();
+
+    glm::vec3 min = getWorldPosition() + bounds.min;
+    glm::vec3 max = getWorldPosition() + bounds.max;
+
+    glm::vec3 oMin = other.getWorldPosition() + oBounds.min;
+    glm::vec3 oMax = other.getWorldPosition() + oBounds.max;
+    
+    glm::vec3 overlap(
+	std::min(max.x, oMax.x) - std::max(min.x, oMin.x),
+	std::min(max.y, oMax.y) - std::max(min.y, oMin.y),
+	std::min(max.z, oMax.z) - std::max(min.z, oMin.z)
+    );
+	
+    if (overlap.x < overlap.y && overlap.x < overlap.z) {
+        position += glm::vec3((getWorldPosition().x < other.getWorldPosition().x) ? -overlap.x : overlap.x, 0, 0);
+	linearVelocity.x = 0.0f;
+    } else if (overlap.y < overlap.z) {
+        position += glm::vec3(0, (getWorldPosition().y < other.getWorldPosition().y) ? -overlap.y : overlap.y, 0);
+	linearVelocity.y = 0.0f;
+    } else {
+	position += glm::vec3(0, 0, (getWorldPosition().z < other.getWorldPosition().z) ? -overlap.z : overlap.z);
+	linearVelocity.z = 0.0f;
+    }
 }

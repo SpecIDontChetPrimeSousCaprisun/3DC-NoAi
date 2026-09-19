@@ -6,7 +6,11 @@
 int main() {
     if (Window::init() < 0) return -1;
 
-    Mesh::loadModel("Monkey.obj");
+    Mesh* monkey = Mesh::loadModel("Monkey.obj")[0];
+    Mesh* monke = Mesh::loadModel("Monkey.obj")[0];
+
+    monkey->anchored = false;
+    monke->position.y = -5;
 
     Window::mainLoop();
 
