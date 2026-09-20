@@ -11,6 +11,7 @@ int main() {
 
     monkey->anchored = false;
     monke->position.y = -5;
+    monke->angularVelocity = glm::vec3(1.0f, 1.0f, 1.0f);
 
     Window::mainLoop();
 

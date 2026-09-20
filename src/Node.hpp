@@ -16,6 +16,7 @@ public:
     void unparent();
     void updateChildren();
     void drawChildren();
+    void setWorldPosition(glm::vec3 pos);
     glm::vec3 getWorldPosition();
     glm::vec3 getWorldRotation();
 

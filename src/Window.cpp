@@ -11,8 +11,8 @@ Camera Window::camera;
 DirLight Window::dirLight;
 double Window::dt = 0;
 double Window::lastFrame = glfwGetTime();
-int Window::width = 800;
-int Window::height = 600;
+int Window::width = 1600;
+int Window::height = 1200;
 
 void Window::frameBufferSizeCallback(GLFWwindow*, int newWidth, int newHeight) {
     width = newWidth;
@@ -31,7 +31,7 @@ int Window::init() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     glfwWindowHint(GLFW_DEPTH_BITS, 24);
-    window = glfwCreateWindow(width, height, "3d game", NULL, NULL);
+    window = glfwCreateWindow(width, height, "3dgame", NULL, NULL);
     if (window == NULL) {
 	std::cout << "Failed to create GLFW window" << std::endl;
 	glfwTerminate();

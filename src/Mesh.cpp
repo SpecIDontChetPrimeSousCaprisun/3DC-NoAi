@@ -170,19 +170,28 @@ void Mesh::sendMatrix() {
 }
 
 BoundResult Mesh::getBounds() {
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::vec3 worldRotation = getWorldRotation();
+
+    model = glm::rotate(model, glm::radians(worldRotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(worldRotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(worldRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
     glm::vec3 bounds(0.0f, 0.0f, 0.0f);
     glm::vec3 lowest(0.0f, 0.0f, 0.0f);
     glm::vec3 highest(0.0f, 0.0f, 0.0f);
     
     for (Vertex vertex : vertices) {
-	if (vertex.position.x < lowest.x) lowest.x = vertex.position.x;
-	else if (vertex.position.x > highest.x) highest.x = vertex.position.x;
+	glm::vec3 pos = model * glm::vec4(vertex.position, 1.0f);
 
-	if (vertex.position.y < lowest.y) lowest.y = vertex.position.y;
-	else if (vertex.position.y > highest.y) highest.y = vertex.position.y;
+	if (pos.x < lowest.x) lowest.x = pos.x;
+	else if (pos.x > highest.x) highest.x = pos.x;
 
-	if (vertex.position.z < lowest.z) lowest.z = vertex.position.z;
-	else if (vertex.position.z > highest.z) highest.z = vertex.position.z;
+	if (pos.y < lowest.y) lowest.y = pos.y;
+	else if (pos.y > highest.y) highest.y = pos.y;
+
+	if (pos.z < lowest.z) lowest.z = pos.z;
+	else if (pos.z > highest.z) highest.z = pos.z;
     }
 
     bounds *= size;
@@ -242,13 +251,13 @@ void Mesh::resolveCollision(Mesh other) {
     );
 	
     if (overlap.x < overlap.y && overlap.x < overlap.z) {
-        position += glm::vec3((getWorldPosition().x < other.getWorldPosition().x) ? -overlap.x : overlap.x, 0, 0);
+        setWorldPosition(glm::vec3((getWorldPosition().x < other.getWorldPosition().x) ? -overlap.x : overlap.x, 0, 0));
 	linearVelocity.x = 0.0f;
     } else if (overlap.y < overlap.z) {
-        position += glm::vec3(0, (getWorldPosition().y < other.getWorldPosition().y) ? -overlap.y : overlap.y, 0);
+        setWorldPosition(glm::vec3(0, (getWorldPosition().y < other.getWorldPosition().y) ? -overlap.y : overlap.y, 0));
 	linearVelocity.y = 0.0f;
     } else {
-	position += glm::vec3(0, 0, (getWorldPosition().z < other.getWorldPosition().z) ? -overlap.z : overlap.z);
+	setWorldPosition(glm::vec3(0, 0, (getWorldPosition().z < other.getWorldPosition().z) ? -overlap.z : overlap.z));
 	linearVelocity.z = 0.0f;
     }
 }

@@ -87,3 +87,9 @@ void Node::updateWorldCoordinates() {
     worldPosition = position + parent->getWorldPosition();
     worldRotation = rotation + parent->getWorldRotation();
 }
+
+void Node::setWorldPosition(glm::vec3 pos) {
+    glm::vec3 offset = pos - parent->getWorldPosition();
+
+    position += offset;
+}
