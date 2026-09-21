@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "Player.hpp"
-#include "Window.hpp"
+#include "IdleState.hpp"
 
 Player* Player::currentPlayer = nullptr;
 
@@ -13,27 +13,22 @@ Player::Player(std::string path) : Mesh(path) {
     anchored = false;
     canCollide = true;
     transparency = 1.0f;
+
+    IdleState* newState = new IdleState();
+    currentState = new State();
+
+    switchStates(newState);
 }
 
 void Player::beforeUpdate() {
     if (this != currentPlayer) return;
 
-    linearVelocity.x = 0.0f;
-    linearVelocity.z = 0.0f;
+    currentState->update();
+}
 
-    float y = linearVelocity.y;
-
-    if (glfwGetKey(Window::window, GLFW_KEY_W)) {
-	linearVelocity += Window::camera.forward * 10.0f;
-    } else if (glfwGetKey(Window::window, GLFW_KEY_S)) {
-	linearVelocity -= Window::camera.forward * 10.0f;
-    } 
-
-    if (glfwGetKey(Window::window, GLFW_KEY_D)) {
-	linearVelocity += Window::camera.right * 10.0f;
-    } else if (glfwGetKey(Window::window, GLFW_KEY_A)) {
-	linearVelocity -= Window::camera.right * 10.0f;
-    } 
-
-    linearVelocity.y = y;
+void Player::switchStates(State* state) {
+    currentState->exit();
+    currentState = state;
+    state->player = this;
+    state->enter();
 }

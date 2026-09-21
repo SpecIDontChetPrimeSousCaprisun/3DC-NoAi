@@ -12,7 +12,9 @@ SRC = src/main.cpp       \
       src/PointLight.cpp \
       src/stbImpl.cpp    \
       src/Texture.cpp	 \
-      src/Player.cpp
+      src/Player.cpp     \
+      src/State.cpp      \
+      src/IdleState.cpp
 
 OBJ_DIR = build
 
