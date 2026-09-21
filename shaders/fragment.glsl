@@ -37,6 +37,7 @@ uniform Material material;
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform vec3 viewPos;
+uniform float transparency;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(-light.direction);
@@ -80,5 +81,5 @@ void main() {
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
     for (int i = 0; i < NR_POINT_LIGHTS; i++) result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
 
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0 - transparency);
 } 

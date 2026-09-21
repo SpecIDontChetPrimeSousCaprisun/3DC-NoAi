@@ -37,6 +37,7 @@ void Camera::update() {
 
     if (Player::currentPlayer) {
 	position = Player::currentPlayer->position;
+	Player::currentPlayer->rotation.y = -rotation.y;
     } else {
 	if (glfwGetKey(Window::window, GLFW_KEY_W) == GLFW_PRESS) {
 	    position += forward * (speed * (float)Window::dt);

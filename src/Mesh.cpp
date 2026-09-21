@@ -198,12 +198,15 @@ void Mesh::init(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
 }
 
 void Mesh::draw() {
+    if (transparency >= 1.0f) return;
+
     glUseProgram(shader->program);
 
     sendMatrix();
     shader->setMaterial(material);
     shader->setDirLight(Window::dirLight);
     shader->setVec3("viewPos", Window::camera.position);
+    shader->setFloat("transparency", transparency);
 
     for (int i = 0; i < 8; i++) {
 	shader->setPointLight(i, PointLight::lights[i]);

@@ -28,6 +28,7 @@ public:
     bool canCollide = false;
     bool anchored = true;
     Material material;
+    float transparency = 0.0f;
 
     BoundResult getBounds();
     bool intersects(Mesh other);
