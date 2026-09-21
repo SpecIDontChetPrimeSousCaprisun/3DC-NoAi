@@ -86,10 +86,85 @@ Mesh* Mesh::processMesh(aiMesh* mesh) {
     return new Mesh(vertices, indices);
 }
 
+aiMesh* Mesh::getFirstMesh(const aiScene* scene, aiNode* node) {
+    if (node->mNumMeshes > 0) return scene->mMeshes[node->mMeshes[0]];
+
+    for (unsigned int i = 0; i < node->mNumChildren; i++) {
+	aiMesh* mesh = getFirstMesh(scene, node->mChildren[i]);
+
+	if (mesh) return mesh;
+    }
+
+    return nullptr;
+}
+
+Mesh::Mesh(std::string path) {
+    Assimp::Importer import;
+
+    const aiScene* scene = import.ReadFile(
+	path,
+	aiProcess_Triangulate |
+	aiProcess_JoinIdenticalVertices |
+	aiProcess_FlipUVs
+    );
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+	std::cout << "Error loading model : " << import.GetErrorString() << "\n";
+    }
+
+    aiMesh* mesh = getFirstMesh(scene, scene->mRootNode);
+
+    if (!mesh) {
+	std::cout << "Failed to process mesh with path " << path << "\n";
+	return;
+    }
+
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+	Vertex vertex;
+	glm::vec3 vector;
+
+	vector.x = mesh->mVertices[i].x;
+	vector.y = mesh->mVertices[i].y;
+	vector.z = mesh->mVertices[i].z; 
+	vertex.position = vector;
+
+	vector.x = mesh->mNormals[i].x;
+	vector.y = mesh->mNormals[i].y;
+	vector.z = mesh->mNormals[i].z;
+	vertex.normal = vector;  
+
+	if (mesh->mTextureCoords[0]) { 
+	    glm::vec2 vec;
+	    vec.x = mesh->mTextureCoords[0][i].x; 
+	    vec.y = mesh->mTextureCoords[0][i].y;
+	    vertex.texCoords = vec;
+	} else vertex.texCoords = glm::vec2(0.0f, 0.0f);
+
+	vertices.push_back(vertex);
+    }
+
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
+	aiFace face = mesh->mFaces[i];
+	for (unsigned int j = 0; j < face.mNumIndices; j++) indices.push_back(face.mIndices[j]);
+    }  
+
+    this->vertices = vertices;
+    this->indices = indices;
+
+    init(vertices, indices);
+}
+
 Mesh::Mesh(
 	std::vector<Vertex> vertices,
 	std::vector<unsigned int> indices
     ) : vertices(vertices), indices(indices) {
+    init(vertices, indices);
+}
+
+void Mesh::init(std::vector<Vertex> vertices, std::vector<unsigned int> indices) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -205,7 +280,11 @@ BoundResult Mesh::getBounds() {
     return result;
 }
 
+void Mesh::beforeUpdate() {}
+
 void Mesh::update() {
+    beforeUpdate();
+
     if (anchored) return;
 
     linearVelocity.y -= 1.0f * (float)Window::dt;

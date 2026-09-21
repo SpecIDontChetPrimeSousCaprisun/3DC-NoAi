@@ -20,6 +20,8 @@ public:
 
 class Mesh : public Node {
 public:
+    Mesh(std::string path);
+
     static std::vector<Mesh*> loadModel(std::string path);
     static void init();
 
@@ -30,8 +32,10 @@ public:
     BoundResult getBounds();
     bool intersects(Mesh other);
 protected:
-    void update();
-    void draw();
+    virtual void beforeUpdate();
+
+    void update() override;
+    void draw() override;
 private:
     Mesh(
 	std::vector<Vertex> vertices,
@@ -44,8 +48,10 @@ private:
     static std::vector<Mesh*> processNode(aiNode* node, const aiScene* scene);
     static Mesh* processMesh(aiMesh* mesh);
 
+    void init(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
     void sendMatrix();
     void resolveCollision(Mesh other);
+    aiMesh* getFirstMesh(const aiScene* scene, aiNode* node);
 
     unsigned int VAO, VBO, EBO;
     std::vector<Vertex> vertices;

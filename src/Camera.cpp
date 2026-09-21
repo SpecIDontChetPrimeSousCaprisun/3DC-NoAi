@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 #include "Window.hpp"
+#include "Player.hpp"
 
 void Camera::update() {
     double xpos, ypos;
@@ -34,15 +35,19 @@ void Camera::update() {
     forward = glm::normalize(dir);
     right = glm::normalize(glm::cross(glm::normalize(dir), glm::vec3(0.0f, 1.0f, 0.0f)));
 
-    if (glfwGetKey(Window::window, GLFW_KEY_W) == GLFW_PRESS) {
-	position += forward * (speed * (float)Window::dt);
-    } else if (glfwGetKey(Window::window, GLFW_KEY_S) == GLFW_PRESS) {
-	position -= forward * (speed * (float)Window::dt);
-    }
+    if (Player::currentPlayer) {
+	position = Player::currentPlayer->position;
+    } else {
+	if (glfwGetKey(Window::window, GLFW_KEY_W) == GLFW_PRESS) {
+	    position += forward * (speed * (float)Window::dt);
+	} else if (glfwGetKey(Window::window, GLFW_KEY_S) == GLFW_PRESS) {
+	    position -= forward * (speed * (float)Window::dt);
+	}
 
-    if (glfwGetKey(Window::window, GLFW_KEY_D) == GLFW_PRESS) {
-	position += right * (speed * (float)Window::dt);
-    } else if (glfwGetKey(Window::window, GLFW_KEY_A) == GLFW_PRESS) {
-	position -= right * (speed * (float)Window::dt);
+	if (glfwGetKey(Window::window, GLFW_KEY_D) == GLFW_PRESS) {
+	    position += right * (speed * (float)Window::dt);
+	} else if (glfwGetKey(Window::window, GLFW_KEY_A) == GLFW_PRESS) {
+	    position -= right * (speed * (float)Window::dt);
+	}
     }
 }

@@ -4,6 +4,7 @@
 #include "Window.hpp"
 #include "Mesh.hpp"
 #include "DirLight.hpp"
+#include "Player.hpp"
 
 GLFWwindow* Window::window = nullptr;
 Node* Window::parent = new Node();
@@ -58,6 +59,7 @@ int Window::init() {
 
     Mesh::init();
     PointLight::init();
+    Player::init();
 
     dirLight.direction = glm::vec3(0.6f, 0.0f, 0.3f);
     dirLight.ambient = glm::vec3(0.25f, 0.1f, 0.0f);
