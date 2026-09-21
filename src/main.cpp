@@ -7,11 +7,13 @@ int main() {
     if (Window::init() < 0) return -1;
 
     Mesh* monkey = Mesh::loadModel("Monkey.obj")[0];
-    Mesh* monke = Mesh::loadModel("Monkey.obj")[0];
+    Mesh* monkey2 = Mesh::loadModel("Monkey.obj")[0];
+    Mesh* monke = Mesh::loadModel("Cube.obj")[0];
 
     monkey->anchored = false;
+    monkey2->anchored = false;
+    monkey2->position.y = 5;
     monke->position.y = -5;
-    monke->angularVelocity = glm::vec3(1.0f, 1.0f, 1.0f);
 
     Window::mainLoop();
 

@@ -2,6 +2,8 @@
 
 #include "Node.hpp"
 
+class Mesh;
+
 class PointLight : public Node {
 public:
     static void init();
@@ -15,4 +17,8 @@ public:
     glm::vec3 ambient = glm::vec3(0.25f, 0.1f, 0.0f);
     glm::vec3 diffuse = glm::vec3(0.0f, 0.7f, 0.3f);
     glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
+private:
+    void genMesh();
+
+    Mesh* mesh;
 };

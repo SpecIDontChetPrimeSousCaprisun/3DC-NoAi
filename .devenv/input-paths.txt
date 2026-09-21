@@ -1,0 +1,8 @@
+/home/chevre/Coding/3DGame/.devenv/bootstrap/bootstrapLib.nix
+/home/chevre/Coding/3DGame/.devenv/bootstrap/default.nix
+/home/chevre/Coding/3DGame/.devenv/bootstrap/resolve-lock.nix
+/home/chevre/Coding/3DGame/devenv.local.nix
+/home/chevre/Coding/3DGame/devenv.lock
+/home/chevre/Coding/3DGame/devenv.nix
+/home/chevre/.config/nixpkgs/overlays
+/home/chevre/.config/nixpkgs/overlays.nix

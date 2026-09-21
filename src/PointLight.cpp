@@ -1,4 +1,5 @@
 #include "PointLight.hpp"
+#include "Mesh.hpp"
 #include "Window.hpp"
 
 PointLight PointLight::lights[8];
@@ -18,5 +19,13 @@ void PointLight::init() {
     for (int i = 0; i < 8; i++) {
 	lights[i].setParent(Window::parent);
 	lights[i].position = pointLightPositions[i];
+	lights[i].genMesh();
     }
+}
+
+void PointLight::genMesh() {
+    mesh = Mesh::loadModel("Cube.obj")[0];
+
+    mesh->size = glm::vec3(0.25f, 0.25f, 0.25f);
+    mesh->setParent(this);
 }
