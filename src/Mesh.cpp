@@ -292,8 +292,10 @@ void Mesh::update() {
 
     linearVelocity.y -= 1.0f * (float)Window::dt;
 
+    if (!canCollide) return;
     for (Mesh* other : meshes) {
 	if (other == this) continue;
+	if (!other->canCollide) continue;
 	if (intersects(*other)) resolveCollision(*other);
     }
 }

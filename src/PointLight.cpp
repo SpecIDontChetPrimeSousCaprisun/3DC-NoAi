@@ -28,4 +28,5 @@ void PointLight::genMesh() {
 
     mesh->size = glm::vec3(0.25f, 0.25f, 0.25f);
     mesh->setParent(this);
+    mesh->canCollide = false;
 }
