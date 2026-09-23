@@ -8,7 +8,7 @@ int main() {
 
     Mesh* monkey = Mesh::loadModel("Monkey.obj")[0];
     Mesh* monkey2 = Mesh::loadModel("Monkey.obj")[0];
-    Mesh* monke = Mesh::loadModel("Cube.obj")[0];
+    Mesh* monke = new Mesh("Cube.obj");
 
     monkey->anchored = false;
     monkey->canCollide = true;

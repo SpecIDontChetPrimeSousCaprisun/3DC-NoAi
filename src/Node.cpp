@@ -6,6 +6,10 @@ Node::Node(Node* parent) {
     setParent(parent);
 }
 
+Node::~Node() {
+    unparent();
+}
+
 Node* Node::getParent() {
     return parent;
 }

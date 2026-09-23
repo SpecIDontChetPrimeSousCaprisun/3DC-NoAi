@@ -2,19 +2,20 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude
 TARGET = game
 
-SRC = src/main.cpp       \
-      src/glad.c         \
-      src/Window.cpp     \
-      src/Shader.cpp     \
-      src/Node.cpp       \
-      src/Mesh.cpp       \
-      src/Camera.cpp     \
-      src/PointLight.cpp \
-      src/stbImpl.cpp    \
-      src/Texture.cpp	 \
-      src/Player.cpp     \
-      src/State.cpp      \
-      src/IdleState.cpp
+SRC = src/main.cpp         \
+      src/glad.c           \
+      src/Window.cpp       \
+      src/Shader.cpp       \
+      src/Node.cpp         \
+      src/Mesh.cpp         \
+      src/Camera.cpp       \
+      src/PointLight.cpp   \
+      src/stbImpl.cpp      \
+      src/Texture.cpp	   \
+      src/Player.cpp       \
+      src/State.cpp        \
+      src/IdleState.cpp    \
+      src/JumpingState.cpp 
 
 OBJ_DIR = build
 

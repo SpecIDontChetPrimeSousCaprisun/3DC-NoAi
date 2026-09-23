@@ -9,6 +9,7 @@ class Node {
 public:
     Node();
     Node(Node* parent);
+    virtual ~Node();
 
     Node* getParent();
     std::vector<Node*> getChildren();

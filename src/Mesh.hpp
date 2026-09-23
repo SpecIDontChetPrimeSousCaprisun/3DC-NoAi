@@ -21,8 +21,10 @@ public:
 class Mesh : public Node {
 public:
     Mesh(std::string path);
+    virtual ~Mesh();
 
     static std::vector<Mesh*> loadModel(std::string path);
+    static std::vector<Mesh*> getMeshesInBounds(glm::vec3 position, glm::vec3 bounds);
     static void init();
 
     bool canCollide = false;
@@ -31,7 +33,7 @@ public:
     float transparency = 0.0f;
 
     BoundResult getBounds();
-    bool intersects(Mesh other);
+    bool intersects(Mesh *other);
 protected:
     virtual void beforeUpdate();
 
@@ -51,7 +53,7 @@ private:
 
     void init(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
     void sendMatrix();
-    void resolveCollision(Mesh other);
+    void resolveCollision(Mesh *other);
     aiMesh* getFirstMesh(const aiScene* scene, aiNode* node);
 
     unsigned int VAO, VBO, EBO;

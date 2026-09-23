@@ -164,6 +164,22 @@ Mesh::Mesh(
     init(vertices, indices);
 }
 
+Mesh::~Mesh() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteTextures(1, &material.diffuse.id);
+    glDeleteTextures(1, &material.specular.id);
+
+    for (auto it = meshes.begin(); it != meshes.end(); ) {
+	 if (*it == this) {
+	     it = meshes.erase(it);
+	 } else {
+	     it++;
+	 }
+    }
+}
+
 void Mesh::init(std::vector<Vertex> vertices, std::vector<unsigned int> indices) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -296,19 +312,19 @@ void Mesh::update() {
     for (Mesh* other : meshes) {
 	if (other == this) continue;
 	if (!other->canCollide) continue;
-	if (intersects(*other)) resolveCollision(*other);
+	if (intersects(other)) resolveCollision(other);
     }
 }
 
-bool Mesh::intersects(Mesh other) {
+bool Mesh::intersects(Mesh *other) {
     BoundResult bounds = getBounds();
-    BoundResult oBounds = other.getBounds();
+    BoundResult oBounds = other->getBounds();
 
     glm::vec3 min = getWorldPosition() + bounds.min;
     glm::vec3 max = getWorldPosition() + bounds.max;
 
-    glm::vec3 oMin = other.getWorldPosition() + oBounds.min;
-    glm::vec3 oMax = other.getWorldPosition() + oBounds.max;
+    glm::vec3 oMin = other->getWorldPosition() + oBounds.min;
+    glm::vec3 oMax = other->getWorldPosition() + oBounds.max;
 
     return min.x <= oMax.x &&
 	   max.x >= oMin.x &&
@@ -318,15 +334,15 @@ bool Mesh::intersects(Mesh other) {
 	   max.z >= oMin.z;
 }
 
-void Mesh::resolveCollision(Mesh other) {
+void Mesh::resolveCollision(Mesh *other) {
     BoundResult bounds = getBounds();
-    BoundResult oBounds = other.getBounds();
+    BoundResult oBounds = other->getBounds();
 
     glm::vec3 min = getWorldPosition() + bounds.min;
     glm::vec3 max = getWorldPosition() + bounds.max;
 
-    glm::vec3 oMin = other.getWorldPosition() + oBounds.min;
-    glm::vec3 oMax = other.getWorldPosition() + oBounds.max;
+    glm::vec3 oMin = other->getWorldPosition() + oBounds.min;
+    glm::vec3 oMax = other->getWorldPosition() + oBounds.max;
     
     glm::vec3 overlap(
 	std::min(max.x, oMax.x) - std::max(min.x, oMin.x),
@@ -335,13 +351,38 @@ void Mesh::resolveCollision(Mesh other) {
     );
 	
     if (overlap.x < overlap.y && overlap.x < overlap.z) {
-        setWorldPosition(glm::vec3((getWorldPosition().x < other.getWorldPosition().x) ? -overlap.x : overlap.x, 0, 0));
-	linearVelocity.x = 0.0f;
+        setWorldPosition(glm::vec3((getWorldPosition().x < other->getWorldPosition().x) ? -overlap.x : overlap.x, 0, 0));
+	if ((position.x < other->position.x && linearVelocity.x > 0.0f) || 
+	    (position.x > other->position.x && linearVelocity.x < 0.0f)) 
+		linearVelocity.x = 0.0f;
     } else if (overlap.y < overlap.z) {
-        setWorldPosition(glm::vec3(0, (getWorldPosition().y < other.getWorldPosition().y) ? -overlap.y : overlap.y, 0));
-	linearVelocity.y = 0.0f;
+        setWorldPosition(glm::vec3(0, (getWorldPosition().y < other->getWorldPosition().y) ? -overlap.y : overlap.y, 0));
+	if ((position.y < other->position.y && linearVelocity.y > 0.0f) || 
+	    (position.y > other->position.y && linearVelocity.y < 0.0f)) 
+		linearVelocity.y = 0.0f;
     } else {
-	setWorldPosition(glm::vec3(0, 0, (getWorldPosition().z < other.getWorldPosition().z) ? -overlap.z : overlap.z));
-	linearVelocity.z = 0.0f;
+	setWorldPosition(glm::vec3(0, 0, (getWorldPosition().z < other->getWorldPosition().z) ? -overlap.z : overlap.z));
+	if ((position.z < other->position.z && linearVelocity.z > 0.0f) || 
+	    (position.z > other->position.z && linearVelocity.y < 0.0f))
+		linearVelocity.z = 0.0f;
     }
+}
+
+std::vector<Mesh*> Mesh::getMeshesInBounds(glm::vec3 pos, glm::vec3 bounds) {
+    Mesh* testMesh = new Mesh("Cube.obj");
+    BoundResult result = testMesh->getBounds();
+
+    testMesh->position = pos;
+    testMesh->size = bounds;
+
+    std::vector<Mesh*> inBounds;
+
+    for (Mesh* mesh : meshes) {
+	if (mesh == testMesh) continue;
+	if (testMesh->intersects(mesh)) inBounds.push_back(mesh);
+    }
+
+    delete testMesh;
+
+    return inBounds;
 }

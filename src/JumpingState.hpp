@@ -2,9 +2,8 @@
 
 #include "State.hpp"
 
-class IdleState : public State {
+class JumpingState : public State {
 public:
+    void enter() override;
     void update() override;
-protected:
-    void init() override;
 };
