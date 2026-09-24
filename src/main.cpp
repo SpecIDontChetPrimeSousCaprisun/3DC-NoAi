@@ -18,6 +18,7 @@ int main() {
     monke->position.y = -5;
     monke->size = glm::vec3(100.0f, 1.0f, 100.0f);
     monke->canCollide = true;
+    monke->transparency = 0.5f;
 
     Window::mainLoop();
 

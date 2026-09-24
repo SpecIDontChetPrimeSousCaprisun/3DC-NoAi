@@ -5,6 +5,8 @@
 #include "Window.hpp"
 #include "Player.hpp"
 
+IdleState::IdleState() : State() { init(); }
+
 void IdleState::update() {
     player->linearVelocity.x = 0.0f;
     player->linearVelocity.z = 0.0f;
@@ -24,7 +26,7 @@ void IdleState::update() {
     } 
 
     player->linearVelocity.y = y;
-    std::vector<Mesh*> result = Mesh::getMeshesInBounds(player->getWorldPosition() - glm::vec3(0.0f, 0.01f, 0.0f), player->size);
+    std::vector<Mesh*> result = Mesh::getMeshesInBounds(player->getWorldPosition() - glm::vec3(0.0f, 0.05f, 0.0f), player->size);
     
     for (auto it = result.begin(); it != result.end(); ) {
 	if (*it == player) {

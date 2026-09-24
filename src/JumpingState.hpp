@@ -4,6 +4,9 @@
 
 class JumpingState : public State {
 public:
+    JumpingState();
+
     void enter() override;
-    void update() override;
+protected:
+    void init() override;
 };

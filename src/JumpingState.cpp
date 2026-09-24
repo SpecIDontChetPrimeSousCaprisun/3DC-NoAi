@@ -2,10 +2,16 @@
 #include "IdleState.hpp"
 #include "Player.hpp"
 
+JumpingState::JumpingState() : State() {
+    init();
+}
+
 void JumpingState::enter() {
-    player->position.x += 0.01;
-    player->linearVelocity.y = 2;
+    //player->position.y += 0.01;
+    player->linearVelocity.y = 3.5f;
     player->switchStates(new IdleState());
 }
 
-void JumpingState::update() {}
+void JumpingState::init() {
+    name = "jumping";
+}

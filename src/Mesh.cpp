@@ -306,7 +306,7 @@ void Mesh::update() {
 
     if (anchored) return;
 
-    linearVelocity.y -= 1.0f * (float)Window::dt;
+    linearVelocity.y -= 5.0f * (float)Window::dt;
 
     if (!canCollide) return;
     for (Mesh* other : meshes) {
@@ -363,7 +363,7 @@ void Mesh::resolveCollision(Mesh *other) {
     } else {
 	setWorldPosition(glm::vec3(0, 0, (getWorldPosition().z < other->getWorldPosition().z) ? -overlap.z : overlap.z));
 	if ((position.z < other->position.z && linearVelocity.z > 0.0f) || 
-	    (position.z > other->position.z && linearVelocity.y < 0.0f))
+	    (position.z > other->position.z && linearVelocity.z < 0.0f))
 		linearVelocity.z = 0.0f;
     }
 }
@@ -374,6 +374,7 @@ std::vector<Mesh*> Mesh::getMeshesInBounds(glm::vec3 pos, glm::vec3 bounds) {
 
     testMesh->position = pos;
     testMesh->size = bounds;
+    testMesh->updateWorldCoordinates();
 
     std::vector<Mesh*> inBounds;
 
