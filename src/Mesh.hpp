@@ -29,6 +29,7 @@ public:
 
     bool canCollide = false;
     bool anchored = true;
+    bool castShadows = true;
     Material material;
     float transparency = 0.0f;
 
@@ -46,6 +47,7 @@ private:
     );
 
     static Shader* shader;
+    static Shader* depthShader;
     static std::vector<Mesh*> meshes;
 
     static std::vector<Mesh*> processNode(aiNode* node, const aiScene* scene);

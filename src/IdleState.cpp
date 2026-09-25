@@ -37,7 +37,7 @@ void IdleState::update() {
 	}
     }
 
-    if (glfwGetKey(Window::window, GLFW_KEY_SPACE) == GLFW_PRESS && result.size() > 0) {
+    if (glfwGetKey(Window::window, GLFW_KEY_SPACE) == GLFW_PRESS && !result.empty()) {
 	player->switchStates(new JumpingState());
     }
 }

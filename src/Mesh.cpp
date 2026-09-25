@@ -6,9 +6,11 @@
 
 std::vector<Mesh*> Mesh::meshes;
 Shader* Mesh::shader;
+Shader* Mesh::depthShader;
 
 void Mesh::init() {
     Mesh::shader = new Shader("shaders/vertex.glsl", "shaders/fragment.glsl");
+    Mesh::depthShader = new Shader("shaders/depthVert.glsl", "shaders/depthFrag.glsl");
 }
 
 std::vector<Mesh*> Mesh::loadModel(std::string path) {
@@ -215,14 +217,31 @@ void Mesh::init(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
 
 void Mesh::draw() {
     if (transparency >= 1.0f) return;
+    if (Window::renderType == "depthMap" && !castShadows) return;
 
-    glUseProgram(shader->program);
+    if (Window::renderType == "depthMap") glUseProgram(depthShader->program);
+    else glUseProgram(shader->program);
 
     sendMatrix();
-    shader->setMaterial(material);
-    shader->setDirLight(Window::dirLight);
-    shader->setVec3("viewPos", Window::camera.position);
-    shader->setFloat("transparency", transparency);
+    float near_plane = 1.0f, far_plane = 200.0f;
+    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
+    glm::mat4 lightView = glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), 
+				      glm::vec3( 0.0f, 0.0f,  0.0f), 
+				      glm::vec3( 0.0f, 1.0f,  0.0f));
+    glm::mat4 lightSpaceMatrix = lightProjection * lightView; 
+
+    if (Window::renderType == "depthMap") {
+	depthShader->setMatrix("lightSpaceMatrix", lightSpaceMatrix);
+    } else {
+	shader->setMaterial(material);
+	shader->setDirLight(Window::dirLight);
+	shader->setVec3("viewPos", Window::camera.position);
+	shader->setFloat("transparency", transparency);
+	shader->setMatrix("lightSpaceMatrix", lightSpaceMatrix);
+	glActiveTexture(GL_TEXTURE2);	
+	glBindTexture(GL_TEXTURE_2D, Window::depthMap);
+	shader->setInt("shadowMap", 2);
+    }
 
     for (int i = 0; i < 8; i++) {
 	shader->setPointLight(i, PointLight::lights[i]);
@@ -258,9 +277,13 @@ void Mesh::sendMatrix() {
 	100.0f
     );
 
-    shader->setMatrix("model", model);
-    shader->setMatrix("view", view);
-    shader->setMatrix("projection", projection);
+    if (Window::renderType == "depthMap") {
+	depthShader->setMatrix("model", model);
+    } else {
+	shader->setMatrix("model", model);
+	shader->setMatrix("view", view);
+	shader->setMatrix("projection", projection);
+    }
 }
 
 BoundResult Mesh::getBounds() {

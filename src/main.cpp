@@ -16,9 +16,8 @@ int main() {
     monkey2->position.y = 5;
     monkey2->canCollide = true;
     monke->position.y = -5;
-    monke->size = glm::vec3(100.0f, 1.0f, 100.0f);
+    monke->size = glm::vec3(10.0f, 0.01f, 10.0f);
     monke->canCollide = true;
-    monke->transparency = 0.5f;
 
     Window::mainLoop();
 

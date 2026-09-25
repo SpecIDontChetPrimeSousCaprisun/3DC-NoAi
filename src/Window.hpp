@@ -21,7 +21,16 @@ public:
     static double lastFrame;
     static int height;
     static int width;
+    static std::string renderType;
+    static unsigned int depthMap;
 private:
     static void frameBufferSizeCallback(GLFWwindow*, int, int);
     static void processInput();
+    static void enableGlFunctions();
+    static void initOtherClasses();
+    static void generateDepthMap();
+
+    static unsigned int depthMapFBO;
+    static unsigned int SHADOW_WIDTH;
+    static unsigned int SHADOW_HEIGHT;
 };
