@@ -17,8 +17,8 @@ int Window::height = 1200;
 std::string Window::renderType = "normal";
 unsigned int Window::depthMapFBO;
 unsigned int Window::depthMap;
-unsigned int Window::SHADOW_WIDTH = 1024;
-unsigned int Window::SHADOW_HEIGHT = 1024;
+unsigned int Window::SHADOW_WIDTH = 4096;
+unsigned int Window::SHADOW_HEIGHT = 4096;
 
 void Window::frameBufferSizeCallback(GLFWwindow*, int newWidth, int newHeight) {
     width = newWidth;
@@ -130,7 +130,9 @@ void Window::mainLoop() {
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_FRONT);
 	parent->drawChildren();
+	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	renderType = "normal";
