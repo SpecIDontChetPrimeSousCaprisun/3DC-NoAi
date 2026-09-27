@@ -47,7 +47,7 @@ void Window::initOtherClasses() {
     PointLight::init();
     Player::init();
 
-    dirLight.direction = glm::vec3(0.6f, 0.0f, 0.3f);
+    dirLight.position = glm::vec3(-2.0f, 4.0f, -1.0f);
     dirLight.ambient = glm::vec3(0.25f, 0.1f, 0.0f);
     dirLight.diffuse = glm::vec3(0.0f, 0.7f, 0.3f);
     dirLight.specular = glm::vec3(1.0f, 1.0f, 1.0f);

@@ -216,7 +216,7 @@ void Mesh::init(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
 }
 
 void Mesh::draw() {
-    if (transparency >= 1.0f) return;
+    if (Window::renderType != "depthMap" && transparency >= 1.0f) return;
     if (Window::renderType == "depthMap" && !castShadows) return;
 
     if (Window::renderType == "depthMap") glUseProgram(depthShader->program);
@@ -224,7 +224,7 @@ void Mesh::draw() {
 
     sendMatrix();
     float near_plane = 1.0f, far_plane = 200.0f;
-    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
+    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, 100.0f, -100.0f, near_plane, far_plane);
     glm::mat4 lightView = glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), 
 				      glm::vec3( 0.0f, 0.0f,  0.0f), 
 				      glm::vec3( 0.0f, 1.0f,  0.0f));

@@ -13,7 +13,7 @@ struct Material {
 };
 
 struct DirLight {
-    vec3 direction;
+    vec3 position;
 
     vec3 ambient;
     vec3 diffuse;
@@ -42,7 +42,7 @@ uniform float transparency;
 uniform sampler2D shadowMap;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
-    vec3 lightDir = normalize(-light.direction);
+    vec3 lightDir = normalize(light.position - FragPos);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
@@ -83,13 +83,14 @@ float ShadowCalculation() {
     float closestDepth = texture(shadowMap, projCoords.xy).r;   
     float currentDepth = projCoords.z;  
     float shadow = 0.0;
+    float bias = max(0.05 * (1.0 - dot(Normal, normalize(dirLight.position - FragPos))), 0.005);  
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
     for(int x = -1; x <= 1; ++x)
     {
 	for(int y = -1; y <= 1; ++y)
 	{
 	    float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-	    shadow += currentDepth - 0.005 > pcfDepth ? 1.0 : 0.0;        
+	    shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
 	}    
     }
     shadow /= 9.0;

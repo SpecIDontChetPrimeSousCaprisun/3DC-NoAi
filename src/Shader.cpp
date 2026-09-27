@@ -79,7 +79,7 @@ void Shader::setVec3(std::string name, glm::vec3 value) {
 }
 
 void Shader::setDirLight(DirLight light) {
-    setVec3("dirLight.direction", light.direction);
+    setVec3("dirLight.position", light.position);
     setVec3("dirLight.ambient", light.ambient);
     setVec3("dirLight.diffuse", light.diffuse);
     setVec3("dirLight.specular", light.specular);
