@@ -14,6 +14,7 @@ double Window::dt = 0;
 double Window::lastFrame = glfwGetTime();
 int Window::width = 1600;
 int Window::height = 1200;
+float Window::gamma = 2.2f;
 std::string Window::renderType = "normal";
 unsigned int Window::depthMapFBO;
 unsigned int Window::depthMap;
@@ -40,6 +41,8 @@ void Window::enableGlFunctions() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_FRAMEBUFFER_SRGB);
 }
 
 void Window::initOtherClasses() {
@@ -48,8 +51,8 @@ void Window::initOtherClasses() {
     Player::init();
 
     dirLight.position = glm::vec3(-2.0f, 4.0f, -1.0f);
-    dirLight.ambient = glm::vec3(0.25f, 0.1f, 0.0f);
-    dirLight.diffuse = glm::vec3(0.0f, 0.7f, 0.3f);
+    dirLight.ambient = glm::vec3(0.274509804f);
+    dirLight.diffuse = glm::vec3(0.588235294f, 0.588235294f, 0.392156863f);
     dirLight.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 }
 
@@ -124,7 +127,7 @@ void Window::mainLoop() {
 
 	renderType = "depthMap";
 
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.0f, 0.717647059f, 0.921568627f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);

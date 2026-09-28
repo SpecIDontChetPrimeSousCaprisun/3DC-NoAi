@@ -21,6 +21,7 @@ public:
     static double lastFrame;
     static int height;
     static int width;
+    static float gamma;
     static std::string renderType;
     static unsigned int depthMap;
 private:

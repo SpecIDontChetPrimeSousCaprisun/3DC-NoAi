@@ -39,6 +39,7 @@ uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform vec3 viewPos;
 uniform float transparency;
+uniform float gamma;
 uniform sampler2D shadowMap;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
@@ -85,10 +86,8 @@ float ShadowCalculation() {
     float shadow = 0.0;
     float bias = max(0.05 * (1.0 - dot(Normal, normalize(dirLight.position - FragPos))), 0.005);  
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -1; x <= 1; ++x)
-    {
-	for(int y = -1; y <= 1; ++y)
-	{
+    for(int x = -1; x <= 1; ++x) {
+	for(int y = -1; y <= 1; ++y) {
 	    float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
 	    shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
 	}    
@@ -103,9 +102,11 @@ void main() {
     vec3 viewDir = normalize(viewPos - FragPos);
 
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
-    //for (int i = 0; i < NR_POINT_LIGHTS; i++) result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+    for (int i = 0; i < NR_POINT_LIGHTS; i++) result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
 
     result *= 1.0 - ShadowCalculation();
 
-    FragColor = vec4(result, 1.0 - transparency);
+    vec4 fragColor = vec4(result, 1.0 - transparency);
+    FragColor.rgb = pow(fragColor.rgb, vec3(1.0/gamma));
+    FragColor.a = fragColor.a;
 } 

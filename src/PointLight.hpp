@@ -14,8 +14,8 @@ public:
     float linear = 0.45f;
     float quadratic = 0.31f;
 
-    glm::vec3 ambient = glm::vec3(0.25f, 0.1f, 0.0f);
-    glm::vec3 diffuse = glm::vec3(0.0f, 0.7f, 0.3f);
+    glm::vec3 ambient = glm::vec3(0.274509804f);
+    glm::vec3 diffuse = glm::vec3(0.588235294f, 0.588235294f, 0.392156863f);
     glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
 private:
     void genMesh();

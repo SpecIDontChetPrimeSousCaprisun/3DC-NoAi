@@ -208,8 +208,8 @@ void Mesh::init(std::vector<Vertex> vertices, std::vector<unsigned int> indices)
 
     glBindVertexArray(0);
 
-    material.diffuse.gen("textures/logo2.png");
-    material.specular.gen("textures/logo2.png");
+    material.diffuse.gen("textures/container2.png");
+    material.specular.gen("textures/container2_specular.png");
 
     setParent(Window::parent);
     meshes.push_back(this);
@@ -238,6 +238,7 @@ void Mesh::draw() {
 	shader->setVec3("viewPos", Window::camera.position);
 	shader->setFloat("transparency", transparency);
 	shader->setMatrix("lightSpaceMatrix", lightSpaceMatrix);
+	shader->setFloat("gamma", Window::gamma);
 	glActiveTexture(GL_TEXTURE2);	
 	glBindTexture(GL_TEXTURE_2D, Window::depthMap);
 	shader->setInt("shadowMap", 2);
