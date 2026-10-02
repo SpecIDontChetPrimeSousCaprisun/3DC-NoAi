@@ -12,6 +12,7 @@
 class Shader {
 public:
     Shader(std::string vertexPath, std::string fragPath);
+    Shader(std::string vertexPath, std::string fragPath, std::string geoPath);
 
     void setBool(std::string name, bool value);
     void setInt(std::string name, int value);
@@ -28,4 +29,5 @@ private:
 
     unsigned int vert;
     unsigned int frag;
+    unsigned int geo;
 };

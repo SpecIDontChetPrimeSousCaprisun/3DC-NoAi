@@ -30,6 +30,35 @@ Shader::Shader(std::string vertPath, std::string fragPath) {
     glDeleteShader(frag);
 }
 
+Shader::Shader(std::string vertPath, std::string fragPath, std::string geoPath) {
+    vert = glCreateShader(GL_VERTEX_SHADER);
+    frag = glCreateShader(GL_FRAGMENT_SHADER);
+    geo = glCreateShader(GL_GEOMETRY_SHADER);
+
+    createShader(vertPath, vert);
+    createShader(fragPath, frag);
+    createShader(geoPath, geo);
+    program = glCreateProgram();
+
+    glAttachShader(program, vert);
+    glAttachShader(program, frag);
+    glAttachShader(program, geo);
+    glLinkProgram(program);
+
+    int success;
+    char infoLog[512];
+    glGetProgramiv(program, GL_COMPILE_STATUS, &success);
+
+    if (!success) {
+	glGetShaderInfoLog(program, 512, NULL, infoLog);
+	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    glDeleteShader(vert);
+    glDeleteShader(frag);
+    glDeleteShader(geo);
+}
+
 void Shader::createShader(std::string path, unsigned int shader) {
     std::ifstream stream(path);
     std::stringstream buffer;

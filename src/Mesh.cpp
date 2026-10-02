@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include "Mesh.hpp"
 #include "Window.hpp"
@@ -10,7 +11,7 @@ Shader* Mesh::depthShader;
 
 void Mesh::init() {
     Mesh::shader = new Shader("shaders/vertex.glsl", "shaders/fragment.glsl");
-    Mesh::depthShader = new Shader("shaders/depthVert.glsl", "shaders/depthFrag.glsl");
+    Mesh::depthShader = new Shader("shaders/depthVert.glsl", "shaders/depthFrag.glsl", "shaders/depthGeo.glsl");
 }
 
 std::vector<Mesh*> Mesh::loadModel(std::string path) {
@@ -223,25 +224,27 @@ void Mesh::draw() {
     else glUseProgram(shader->program);
 
     sendMatrix();
-    float near_plane = 1.0f, far_plane = 200.0f;
-    glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, 100.0f, -100.0f, near_plane, far_plane);
-    glm::mat4 lightView = glm::lookAt(glm::vec3(-2.0f, 4.0f, -1.0f), 
-				      glm::vec3( 0.0f, 0.0f,  0.0f), 
-				      glm::vec3( 0.0f, 1.0f,  0.0f));
-    glm::mat4 lightSpaceMatrix = lightProjection * lightView; 
 
     if (Window::renderType == "depthMap") {
-	depthShader->setMatrix("lightSpaceMatrix", lightSpaceMatrix);
+	depthShader->setVec3("lightPos", Window::dirLight.position);
+	depthShader->setFloat("far_plane", Window::farPlane);
+
+	for (int i = 0; i < 6; i++) {
+	    std::ostringstream ss;
+	    ss << "shadowMatrices[" << i << "]";
+	    depthShader->setMatrix(ss.str(), Window::shadowTransforms[i]);
+	}
     } else {
 	shader->setMaterial(material);
 	shader->setDirLight(Window::dirLight);
 	shader->setVec3("viewPos", Window::camera.position);
 	shader->setFloat("transparency", transparency);
-	shader->setMatrix("lightSpaceMatrix", lightSpaceMatrix);
 	shader->setFloat("gamma", Window::gamma);
+	shader->setFloat("far_plane", Window::farPlane);
 	glActiveTexture(GL_TEXTURE2);	
-	glBindTexture(GL_TEXTURE_2D, Window::depthMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, Window::depthCubemap);
 	shader->setInt("shadowMap", 2);
+	shader->setBool("debug", Window::debug);
     }
 
     for (int i = 0; i < 8; i++) {

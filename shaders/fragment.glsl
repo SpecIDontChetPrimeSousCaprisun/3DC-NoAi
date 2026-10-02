@@ -2,7 +2,6 @@
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
-in vec4 FragPosLightSpace;
 
 out vec4 FragColor;
 
@@ -40,7 +39,9 @@ uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform vec3 viewPos;
 uniform float transparency;
 uniform float gamma;
-uniform sampler2D shadowMap;
+uniform float far_plane;
+uniform samplerCube shadowMap;
+uniform bool debug;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
     vec3 lightDir = normalize(light.position - FragPos);
@@ -78,7 +79,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 }
 
 float ShadowCalculation() {
-    vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
+    /*vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
 
     float closestDepth = texture(shadowMap, projCoords.xy).r;   
@@ -94,6 +95,19 @@ float ShadowCalculation() {
     }
     shadow /= 9.0;
 
+    return shadow;*/
+
+    vec3 fragToLight = FragPos - dirLight.position; 
+    float closestDepth = texture(shadowMap, fragToLight).r;
+
+    closestDepth *= far_plane;
+
+    float currentDepth = length(fragToLight);  
+    float bias = max(0.05 * (1.0 - dot(Normal, normalize(dirLight.position - FragPos))), 0.005);  
+    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0; 
+
+    if (debug) FragColor = vec4(vec3(closestDepth / far_plane), 1.0);
+
     return shadow;
 }
 
@@ -106,7 +120,9 @@ void main() {
 
     result *= 1.0 - ShadowCalculation();
 
-    vec4 fragColor = vec4(result, 1.0 - transparency);
-    FragColor.rgb = pow(fragColor.rgb, vec3(1.0/gamma));
-    FragColor.a = fragColor.a;
+    if (!debug) {
+	vec4 fragColor = vec4(result, 1.0 - transparency);
+	FragColor.rgb = pow(fragColor.rgb, vec3(1.0/gamma));
+	FragColor.a = fragColor.a;
+    }
 } 
