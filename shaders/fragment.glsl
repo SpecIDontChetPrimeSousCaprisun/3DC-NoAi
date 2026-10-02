@@ -79,24 +79,6 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir) {
 }
 
 float ShadowCalculation() {
-    /*vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
-
-    float closestDepth = texture(shadowMap, projCoords.xy).r;   
-    float currentDepth = projCoords.z;  
-    float shadow = 0.0;
-    float bias = max(0.05 * (1.0 - dot(Normal, normalize(dirLight.position - FragPos))), 0.005);  
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -1; x <= 1; ++x) {
-	for(int y = -1; y <= 1; ++y) {
-	    float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-	    shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
-	}    
-    }
-    shadow /= 9.0;
-
-    return shadow;*/
-
     vec3 fragToLight = FragPos - dirLight.position; 
     float closestDepth = texture(shadowMap, fragToLight).r;
 
@@ -104,7 +86,24 @@ float ShadowCalculation() {
 
     float currentDepth = length(fragToLight);  
     float bias = max(0.05 * (1.0 - dot(Normal, normalize(dirLight.position - FragPos))), 0.005);  
-    float shadow = currentDepth - bias > closestDepth ? 1.0 : 0.0; 
+    float shadow = 0.0;
+    float samples = 20.0;
+    float viewDistance = length(viewPos - FragPos);
+    float diskRadius = (1.0 + (viewDistance / far_plane)) / 25.0;
+    vec3 sampleOffsetDirections[20] = vec3[] (
+       vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+       vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+       vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+       vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+       vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+    );
+
+    for(int i = 0; i < samples; ++i) {
+	float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+	closestDepth *= far_plane;   // undo mapping [0;1]
+	if(currentDepth - bias > closestDepth) shadow += 1.0;
+    }
+    shadow /= float(samples);  
 
     if (debug) FragColor = vec4(vec3(closestDepth / far_plane), 1.0);
 
