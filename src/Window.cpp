@@ -3,6 +3,7 @@
 #include "Shader.hpp"
 #include "Window.hpp"
 #include "Mesh.hpp"
+#include "Frame.hpp"
 #include "DirLight.hpp"
 
 GLFWwindow* Window::window = nullptr;
@@ -75,6 +76,7 @@ void Window::enableGlFunctions() {
 
 void Window::initOtherClasses() {
     Mesh::init();
+    Frame::init();
     PointLight::init();
     Player::init();
 
@@ -82,14 +84,6 @@ void Window::initOtherClasses() {
     dirLight.ambient = glm::vec3(0.274509804f);
     dirLight.diffuse = glm::vec3(0.588235294f, 0.588235294f, 0.392156863f);
     dirLight.specular = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    /*Mesh* mesh = Mesh::loadModel("Cube.obj")[0];
-
-    mesh->position = dirLight.position;
-    mesh->size = glm::vec3(0.25f, 0.25f, 0.25f);
-    mesh->setParent(parent);
-    mesh->canCollide = false;
-    mesh->castShadows = false;*/
 }
 
 void Window::generateDepthMap() {
@@ -238,7 +232,6 @@ void Window::mainLoop() {
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	//glCullFace(GL_FRONT);
 	parent->drawChildren();
 	glCullFace(GL_BACK);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

@@ -2,6 +2,7 @@
 
 #include "Window.hpp"
 #include "Mesh.hpp"
+#include "Frame.hpp"
 
 int main() {
     if (Window::init() < 0) return -1;
@@ -18,6 +19,8 @@ int main() {
     monke->position.y = -5;
     monke->size = glm::vec3(10.0f, 0.01f, 10.0f);
     monke->canCollide = true;
+
+    new Frame();
 
     Window::mainLoop();
 
