@@ -6,24 +6,8 @@ TARGET = game
 WIN_TARGET = publish/windows/game.exe
 TESTFLAGS = MANGOHUD=1 mangohud __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia __VK_LAYER_NV_optimus=NVIDIA_only
 
-SRC = src/main.cpp         \
-      src/glad.c           \
-      src/Window.cpp       \
-      src/Shader.cpp       \
-      src/Node.cpp         \
-      src/Mesh.cpp         \
-      src/Camera.cpp       \
-      src/PointLight.cpp   \
-      src/stbImpl.cpp      \
-      src/Texture.cpp	   \
-      src/Player.cpp       \
-      src/State.cpp        \
-      src/IdleState.cpp    \
-      src/JumpingState.cpp \
-      src/Frame.cpp
-
+SRC = $(shell find src -name '*.cpp') $(shell find src -name '*.c')
 OBJ_DIR = build
-
 OBJ = $(SRC:src/%.cpp=$(OBJ_DIR)/src/%.o)
 OBJ := $(OBJ:src/glad.c=$(OBJ_DIR)/src/glad.o)
 
@@ -58,7 +42,7 @@ $(TARGET): $(OBJ)
 	$(CXX) $(OBJ) -o $(TARGET) $(LIBS_LINUX)
 
 $(OBJ_DIR)/src/%.o: src/%.cpp
-	mkdir -p $(dir $@z
+	mkdir -p $(dir $@z)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJ_DIR)/src/glad.o: src/glad.c

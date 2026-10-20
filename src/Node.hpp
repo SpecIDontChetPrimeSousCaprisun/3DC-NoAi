@@ -7,8 +7,8 @@
 
 class Node {
 public:
-    Node();
-    Node(Node* parent);
+    Node(bool is2D = false);
+    Node(Node* parent, bool is2D = false);
     virtual ~Node();
 
     Node* getParent();
@@ -17,6 +17,7 @@ public:
     void unparent();
     void updateChildren();
     void drawChildren();
+    void drawUIChildren();
     void setWorldPosition(glm::vec3 pos);
     glm::vec3 getWorldPosition();
     glm::vec3 getWorldRotation();
@@ -30,6 +31,7 @@ protected:
     void applyVelocities();
     void updateWorldCoordinates();
 
+    bool is2D = false;
     Node* parent;
     virtual void update();
     virtual void draw();

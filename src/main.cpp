@@ -20,7 +20,10 @@ int main() {
     monke->size = glm::vec3(10.0f, 0.01f, 10.0f);
     monke->canCollide = true;
 
-    new Frame();
+    Frame* frame = new Frame();
+
+    frame->position.y = 0.25f;
+    frame->size = glm::vec3(2.0f, 0.5f, 1.0f);
 
     Window::mainLoop();
 

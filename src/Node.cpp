@@ -1,8 +1,8 @@
 #include "Node.hpp"
 #include "Window.hpp"
 
-Node::Node() : parent(nullptr) {}
-Node::Node(Node* parent) {
+Node::Node(bool is2D) : is2D(is2D), parent(nullptr) {}
+Node::Node(Node* parent, bool is2D) : is2D(is2D) {
     setParent(parent);
 }
 
@@ -51,11 +51,25 @@ void Node::updateChildren() {
 
 void Node::drawChildren() {
     for (Node* child : children) {
+	if (child->is2D) continue;
+
 	child->draw();
     }
 
     for (Node* child : children) {
 	child->drawChildren();
+    }
+}
+
+void Node::drawUIChildren() {
+    for (Node* child : children) {
+	if (!child->is2D) continue;
+
+	child->draw();
+    }
+
+    for (Node* child : children) {
+	child->drawUIChildren();
     }
 }
 

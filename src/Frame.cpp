@@ -10,17 +10,17 @@ void Frame::init() {
     shader = new Shader("shaders/2DVert.glsl", "shaders/2DFrag.glsl");
 }
 
-Frame::Frame() : Node() {
+Frame::Frame() : Node(true) {
     float vertices[] = {
-	 0.5f,  0.5f, 0.0f,  // top right
-	 0.5f, -0.5f, 0.0f,  // bottom right
-	-0.5f, -0.5f, 0.0f,  // bottom left
-	-0.5f,  0.5f, 0.0f   // top left 
+	 0.5f,  0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	-0.5f, -0.5f, 0.0f,
+	-0.5f,  0.5f, 0.0f 
     };
 
-    unsigned int indices[] = {  // note that we start from 0!
-	0, 1, 3,   // first triangle
-	1, 2, 3    // second triangle
+    unsigned int indices[] = {
+	0, 1, 3,   
+	1, 2, 3   
     }; 
 
     glGenVertexArrays(1, &VAO);
@@ -42,7 +42,20 @@ void Frame::update() {}
 
 void Frame::draw() {
     glUseProgram(shader->program);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+
+    glm::mat4 model = glm::mat4(1.0f);
+
+    model = glm::translate(model, getWorldPosition());
+    model = glm::scale(model, size);
+
+    shader->setMatrix("model", model);
+
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 }
